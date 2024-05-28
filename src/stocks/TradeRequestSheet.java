@@ -63,8 +63,8 @@ public class TradeRequestSheet {
         // Assume that this will delete from the list of requests
         int quantity = Math.min(buyRequest.getQuantity(), sellRequest.getQuantity());
         // write the buystock metheod in the investor class
-        buyRequest.getInvestor().buyStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit());
-        sellRequest.getInvestor().sellStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit());
+        // buyRequest.getInvestor().buyStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit());
+        // sellRequest.getInvestor().sellStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit());
 
         if (buyRequest.getQuantity() == quantity) {
             // If the buy request has been completely fulfilled, remove it from the list of buy requests

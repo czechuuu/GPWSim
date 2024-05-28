@@ -31,6 +31,15 @@ abstract public class ATradeRequest {
         this.quantity -= quantity;
     }
 
+    public boolean considerTrade(ATradeRequest other) {
+        if (this.isBuyRequest() && other.isSellRequest() && this.getPriceLimit() >= other.getPriceLimit()) {
+            return true;
+        } else if (this.isSellRequest() && other.isBuyRequest() && this.getPriceLimit() <= other.getPriceLimit()) {
+            return true;
+        }
+        return false;
+    }
+
     public Stock getStock() {
         return stock;
     }
