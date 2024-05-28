@@ -1,4 +1,4 @@
 package investors;
 
-abstract public class AbstractInvestor {
+abstract public class AInvestor {
 }

@@ -1,25 +1,38 @@
 package requests;
 
-abstract public class TradeRequest {
-    private final String stockSymbol;
-    private final int quantity;
-    private final TradeType tradeType;
+import investors.AInvestor;
+import stocks.Stock;
 
+abstract public class ATradeRequest {
+    private final AInvestor investor;
+    private final Stock stock;
+    private final TradeType tradeType;
     /**
      * The price limit for the trade request. If the trade request is a BUY request, the price limit is the maximum price the buyer is willing to pay.
      * If the trade request is a SELL request, the price limit is the minimum price the seller is willing to accept.
      */
     private final int priceLimit;
+    private int quantity;
 
-    public TradeRequest(String stockSymbol, int quantity, int priceLimit, TradeType tradeType) {
-        this.stockSymbol = stockSymbol;
+
+    // Constructor for the investor
+    public ATradeRequest(AInvestor investor, Stock stock, int quantity, int priceLimit, TradeType tradeType) {
+        this.investor = investor;
+        this.stock = stock;
         this.quantity = quantity;
         this.tradeType = tradeType;
         this.priceLimit = priceLimit;
     }
 
-    public String getStockSymbol() {
-        return stockSymbol;
+    public void reduceQuantity(int quantity) {
+        if (quantity > this.quantity) {
+            throw new IllegalArgumentException("Cannot reduce quantity by more than the current quantity");
+        }
+        this.quantity -= quantity;
+    }
+
+    public Stock getStock() {
+        return stock;
     }
 
     public int getQuantity() {
@@ -36,6 +49,10 @@ abstract public class TradeRequest {
 
     public int getPriceLimit() {
         return priceLimit;
+    }
+
+    public AInvestor getInvestor() {
+        return investor;
     }
 
     public enum TradeType {

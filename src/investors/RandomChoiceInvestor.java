@@ -1,4 +1,4 @@
 package investors;
 
-public class RandomChoiceInvestor {
+public class RandomChoiceInvestor extends AInvestor {
 }
