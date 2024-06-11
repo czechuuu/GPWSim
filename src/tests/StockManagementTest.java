@@ -7,11 +7,11 @@ import stocks.StockManagement;
 import utilities.Parser;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class StockManagementTests {
+public class StockManagementTest {
     private Parser parser;
 
     @BeforeEach
@@ -41,6 +41,10 @@ public class StockManagementTests {
         stockManagement.updateStockPriceByName("APL", 155, 2);
         assertEquals(155, stock.getLastPrice());
         assertEquals(2, stock.getLastTradeRound());
+        // cant create duplicate stock
+        assertThrows(IllegalArgumentException.class, () -> stockManagement.createStock("APL", 145, 0));
+        // stock doesnt exist
+        assertThrows(NoSuchElementException.class, () -> stockManagement.getStock("TSLA"));
     }
 
     @Test

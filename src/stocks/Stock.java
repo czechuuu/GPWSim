@@ -1,5 +1,10 @@
 package stocks;
 
+import investors.AInvestor;
+import requests.ATradeRequest;
+import requests.IndefiniteTradeRequest;
+import requests.InstantTradeRequest;
+
 public class Stock {
     private final String identifier;
     private int lastPrice;
@@ -36,6 +41,24 @@ public class Stock {
     public int getLastTradeRound() {
         return lastTradeRound;
     }
+
+    public ATradeRequest createIndefiniteBuyRequest(AInvestor investor, int quantity, int priceLimit) {
+        return new IndefiniteTradeRequest(investor, this, quantity, priceLimit, ATradeRequest.TradeType.BUY);
+    }
+
+    public ATradeRequest createIndefiniteSellRequest(AInvestor investor, int quantity, int priceLimit) {
+        return new IndefiniteTradeRequest(investor, this, quantity, priceLimit, ATradeRequest.TradeType.SELL);
+    }
+
+    public ATradeRequest createInstantBuyRequest(AInvestor investor, int quantity, int priceLimit) {
+        return new InstantTradeRequest(investor, this, quantity, priceLimit, ATradeRequest.TradeType.BUY);
+    }
+
+    public ATradeRequest createInstantSellRequest(AInvestor investor, int quantity, int priceLimit) {
+        return new InstantTradeRequest(investor, this, quantity, priceLimit, ATradeRequest.TradeType.SELL);
+    }
+
+    // TODO rest od creators or maybe better way tyo not write duplicate code
 
 
 }

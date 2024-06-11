@@ -8,7 +8,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FileParserTests {
+public class FileParserTest {
     private static String getAbsolutePath(String filePath) {
         return Path.of(filePath).toAbsolutePath().toString();
     }

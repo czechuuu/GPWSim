@@ -6,18 +6,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 abstract public class AInvestor {
-    private final String name;
+    private final int id;
     private final Map<Stock, Integer> stocksPortfolio;
     private int balance;
 
-    public AInvestor(String name, int balance) {
-        this.name = name;
+    public AInvestor(int id, int balance) {
+        this.id = id;
         this.balance = balance;
         this.stocksPortfolio = new HashMap<>();
     }
 
-    public String getName() {
-        return name;
+    public AInvestor(int id, int balance, Map<Stock, Integer> stocksPortfolio) {
+        this.id = id;
+        this.balance = balance;
+        this.stocksPortfolio = new HashMap<>(stocksPortfolio); // copy the map!!
+    }
+
+    public int getId() {
+        return id;
     }
 
     public int getBalance() {
@@ -69,6 +75,10 @@ abstract public class AInvestor {
         int totalCost = quantity * price;
         deposit(totalCost);
         stocksPortfolio.put(stock, stocksPortfolio.get(stock) - quantity);
+    }
+
+    public int getStockQuantity(Stock stock) {
+        return stocksPortfolio.getOrDefault(stock, 0);
     }
 
 

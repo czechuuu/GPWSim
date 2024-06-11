@@ -1,5 +1,7 @@
 package stocks;
 
+import utilities.Parser;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +25,10 @@ public class StockManagement {
     public StockManagement(Map<String, Integer> identifierPriceMap) {
         this.stockIdentifiers = new HashMap<>();
         createStocksFromIdentifierPriceMap(identifierPriceMap);
+    }
+
+    public StockManagement(Parser parser) {
+        this(parser.getStockPrices());
     }
 
     /**

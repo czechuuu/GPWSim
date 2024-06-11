@@ -13,13 +13,13 @@ public class TradeRequestSheet {
      * Comparator for buy requests.
      * Used for sorting in descending order by price limit.
      */
-    static Comparator<ATradeRequest> buyComparator = (a, b) -> Integer.compare(b.getPriceLimit(), a.getPriceLimit());
+    static final Comparator<ATradeRequest> buyComparator = (a, b) -> Integer.compare(b.getPriceLimit(), a.getPriceLimit());
 
     /**
      * Comparator for sell requests.
      * Used for sorting in ascending order by price limit.
      */
-    static Comparator<ATradeRequest> sellComparator = (a, b) -> Integer.compare(a.getPriceLimit(), b.getPriceLimit());
+    static final Comparator<ATradeRequest> sellComparator = (a, b) -> Integer.compare(a.getPriceLimit(), b.getPriceLimit());
 
     private final Map<Stock, SortedList<ATradeRequest>> buyRequestsMap;
     private final Map<Stock, SortedList<ATradeRequest>> sellRequestsMap;
@@ -56,17 +56,17 @@ public class TradeRequestSheet {
     }
 
     public void realiseSubmittedTrades(StockExchangeSimulation simulation) {
-        checkForTrades();
+        checkForTrades(simulation.getRound());
         removeExpiredRequests(simulation);
     }
 
-    private void checkForTrades() {
+    private void checkForTrades(int round) {
         for (Stock stock : buyRequestsMap.keySet()) {
-            checkForTradesForStock(stock);
+            checkForTradesForStock(stock, round);
         }
     }
 
-    private void checkForTradesForStock(Stock stock) {
+    private void checkForTradesForStock(Stock stock, int round) {
         SortedList<ATradeRequest> buyRequests = buyRequestsMap.get(stock);
         SortedList<ATradeRequest> sellRequests = sellRequestsMap.get(stock);
 
@@ -74,7 +74,7 @@ public class TradeRequestSheet {
         for (ATradeRequest buyRequest : buyRequests) {
             for (ATradeRequest sellRequest : sellRequests) {
                 if (buyRequest.getPriceLimit() >= sellRequest.getPriceLimit()) {
-                    boolean buyRequestFullfilled = realiseTrade(buyRequest, sellRequest);
+                    boolean buyRequestFullfilled = realiseTrade(buyRequest, sellRequest, round);
                     if (buyRequestFullfilled) {
                         // If the buy request has been completely fulfilled, move on to the next buy request
                         continue outer;
@@ -97,21 +97,24 @@ public class TradeRequestSheet {
      * @param sellRequest the sell request
      * @return true if the buy request has been completely fulfilled or cancelled, false otherwise
      */
-    private boolean realiseTrade(ATradeRequest buyRequest, ATradeRequest sellRequest) {
+    private boolean realiseTrade(ATradeRequest buyRequest, ATradeRequest sellRequest, int round) {
         // Implement the trade logic here
         // Assume that this will delete from the list of requests
         int quantity = Math.min(buyRequest.getQuantity(), sellRequest.getQuantity());
 
         if (buyRequest.getInvestor().canBuyStock(buyRequest.getStock(), quantity, buyRequest.getPriceLimit())) {
             if (sellRequest.getInvestor().canSellStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit())) {
-                buyRequest.getInvestor().buyStock(buyRequest.getStock(), quantity, buyRequest.getPriceLimit());
+                buyRequest.getInvestor().buyStock(buyRequest.getStock(), quantity, sellRequest.getPriceLimit());
                 sellRequest.getInvestor().sellStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit());
                 reduceQuantityOrRemove(buyRequest, quantity);
                 reduceQuantityOrRemove(sellRequest, quantity);
+                buyRequest.getStock().updateLastTransactionInformation(sellRequest.getPriceLimit(), buyRequest.getStock().getLastTradeRound());
                 return !buyRequestsMap.get(buyRequest.getStock()).getList().contains(buyRequest);
             }
         }
 
+        // we don't consider realizing trade possibly even more partially
+        // if one of the investors can afford only part of the trade
         removeRequestIfCancelledDueToInsufficientFunds(sellRequest);
         return removeRequestIfCancelledDueToInsufficientFunds(buyRequest);
     }
@@ -205,6 +208,14 @@ public class TradeRequestSheet {
                 sellRequests.remove(sellRequest);
             }
         }
+    }
+
+    public Map<Stock, SortedList<ATradeRequest>> getBuyRequestsMap() {
+        return buyRequestsMap;
+    }
+
+    public Map<Stock, SortedList<ATradeRequest>> getSellRequestsMap() {
+        return sellRequestsMap;
     }
 
 }
