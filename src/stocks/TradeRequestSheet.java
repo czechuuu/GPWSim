@@ -1,9 +1,12 @@
 package stocks;
 
 import requests.ATradeRequest;
+import simulation.StockExchangeSimulation;
 import utilities.SortedList;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TradeRequestSheet {
     /**
@@ -18,12 +21,14 @@ public class TradeRequestSheet {
      */
     static Comparator<ATradeRequest> sellComparator = (a, b) -> Integer.compare(a.getPriceLimit(), b.getPriceLimit());
 
-    private final SortedList<ATradeRequest> buyRequests;
-    private final SortedList<ATradeRequest> sellRequests;
+    private final Map<Stock, SortedList<ATradeRequest>> buyRequestsMap;
+    private final Map<Stock, SortedList<ATradeRequest>> sellRequestsMap;
 
     public TradeRequestSheet() {
-        buyRequests = new SortedList<>(buyComparator);
-        sellRequests = new SortedList<>(sellComparator);
+
+
+        buyRequestsMap = new HashMap<>();
+        sellRequestsMap = new HashMap<>();
     }
 
     public void addRequest(ATradeRequest request) {
@@ -35,19 +40,45 @@ public class TradeRequestSheet {
     }
 
     private void addBuyRequest(ATradeRequest request) {
-        buyRequests.add(request);
+        // make sure there are lists for the stock
+        buyRequestsMap.putIfAbsent(request.getStock(), new SortedList<>(buyComparator));
+        sellRequestsMap.putIfAbsent(request.getStock(), new SortedList<>(sellComparator));
+        // add the request to the list of buy requests for the stock
+        buyRequestsMap.get(request.getStock()).add(request);
     }
 
     private void addSellRequest(ATradeRequest request) {
-        sellRequests.add(request);
+        // make sure there are lists for the stock
+        buyRequestsMap.putIfAbsent(request.getStock(), new SortedList<>(buyComparator));
+        sellRequestsMap.putIfAbsent(request.getStock(), new SortedList<>(sellComparator));
+        // add the request to the list of sell requests for the stock
+        sellRequestsMap.get(request.getStock()).add(request);
+    }
+
+    public void realiseSubmittedTrades(StockExchangeSimulation simulation) {
+        checkForTrades();
+        removeExpiredRequests(simulation);
     }
 
     private void checkForTrades() {
+        for (Stock stock : buyRequestsMap.keySet()) {
+            checkForTradesForStock(stock);
+        }
+    }
+
+    private void checkForTradesForStock(Stock stock) {
+        SortedList<ATradeRequest> buyRequests = buyRequestsMap.get(stock);
+        SortedList<ATradeRequest> sellRequests = sellRequestsMap.get(stock);
+
         outer:
         for (ATradeRequest buyRequest : buyRequests) {
             for (ATradeRequest sellRequest : sellRequests) {
                 if (buyRequest.getPriceLimit() >= sellRequest.getPriceLimit()) {
-                    realiseTrade(buyRequest, sellRequest);
+                    boolean buyRequestFullfilled = realiseTrade(buyRequest, sellRequest);
+                    if (buyRequestFullfilled) {
+                        // If the buy request has been completely fulfilled, move on to the next buy request
+                        continue outer;
+                    }
                 } else {
                     // Since the sell requests are sorted in ascending order by price limit,
                     // if the price limit of the current sell request is less than the price limit of the current buy request,
@@ -58,22 +89,122 @@ public class TradeRequestSheet {
         }
     }
 
-    private void realiseTrade(ATradeRequest buyRequest, ATradeRequest sellRequest) {
+    /**
+     * Realises a trade between a buy request and a sell request.
+     * If the buy request is completely fulfilled, it is removed from the list of buy requests.
+     *
+     * @param buyRequest  the buy request
+     * @param sellRequest the sell request
+     * @return true if the buy request has been completely fulfilled or cancelled, false otherwise
+     */
+    private boolean realiseTrade(ATradeRequest buyRequest, ATradeRequest sellRequest) {
         // Implement the trade logic here
         // Assume that this will delete from the list of requests
         int quantity = Math.min(buyRequest.getQuantity(), sellRequest.getQuantity());
-        // write the buystock metheod in the investor class
-        // buyRequest.getInvestor().buyStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit());
-        // sellRequest.getInvestor().sellStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit());
 
-        if (buyRequest.getQuantity() == quantity) {
-            // If the buy request has been completely fulfilled, remove it from the list of buy requests
-            // Should work if the list is implemented correctly -> make sure it deletes the correct request
-            buyRequests.remove(buyRequest);
+        if (buyRequest.getInvestor().canBuyStock(buyRequest.getStock(), quantity, buyRequest.getPriceLimit())) {
+            if (sellRequest.getInvestor().canSellStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit())) {
+                buyRequest.getInvestor().buyStock(buyRequest.getStock(), quantity, buyRequest.getPriceLimit());
+                sellRequest.getInvestor().sellStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit());
+                reduceQuantityOrRemove(buyRequest, quantity);
+                reduceQuantityOrRemove(sellRequest, quantity);
+                return !buyRequestsMap.get(buyRequest.getStock()).getList().contains(buyRequest);
+            }
+        }
+
+        removeRequestIfCancelledDueToInsufficientFunds(sellRequest);
+        return removeRequestIfCancelledDueToInsufficientFunds(buyRequest);
+    }
+
+    /**
+     * Reduces the quantity of a trade request.
+     * If the quantity is reduced to 0, the request is removed from the list of requests.
+     *
+     * @param request  the trade request
+     * @param quantity the quantity to reduce by
+     */
+    private void reduceQuantityOrRemove(ATradeRequest request, int quantity) {
+        if (request.getQuantity() < quantity) {
+            throw new IllegalArgumentException("Cannot reduce quantity by more than the current quantity");
+        }
+        if (request.getQuantity() == quantity) {
+            removeRequest(request);
         } else {
-            buyRequest.reduceQuantity(quantity);
+            request.reduceQuantity(quantity);
         }
     }
 
+    /**
+     * Removes a trade request from the list of requests.
+     *
+     * @param request the trade request to remove
+     */
+    private void removeRequest(ATradeRequest request) {
+        if (request.isBuyRequest()) {
+            buyRequestsMap.get(request.getStock()).remove(request);
+        } else {
+            sellRequestsMap.get(request.getStock()).remove(request);
+        }
+    }
+
+    /**
+     * Removes a trade request from the list of requests if it had to be cancelled due to insufficient funds.
+     *
+     * @param request the trade request to remove
+     * @return true if the request was removed, false otherwise
+     */
+    private boolean removeRequestIfCancelledDueToInsufficientFunds(ATradeRequest request) {
+        if (request.isBuyRequest()) {
+            if (!request.getInvestor().canBuyStock(request.getStock(), request.getQuantity(), request.getPriceLimit())) {
+                buyRequestsMap.get(request.getStock()).remove(request);
+                return true;
+            }
+        } else {
+            if (!request.getInvestor().canSellStock(request.getStock(), request.getQuantity(), request.getPriceLimit())) {
+                sellRequestsMap.get(request.getStock()).remove(request);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Removes expired requests from the list of requests.
+     *
+     * @param simulation the simulation (current round needed to check for expired requests)
+     */
+    private void removeExpiredRequests(StockExchangeSimulation simulation) {
+        /*
+          We only iterate over the key set of buyRequestsMap because the keys of buyRequestsMap and sellRequestsMap
+          are the same. This is because we add a stock to both maps at the same time when we add a request.
+         */
+        for (Stock stock : buyRequestsMap.keySet()) {
+            removeExpiredRequestsForStock(stock, simulation);
+        }
+    }
+
+    /**
+     * Removes expired requests for a specific stock from the list of requests.
+     *
+     * @param stock      the stock
+     * @param simulation the simulation (current round needed to check for expired requests)
+     */
+    private void removeExpiredRequestsForStock(Stock stock, StockExchangeSimulation simulation) {
+        SortedList<ATradeRequest> buyRequests = buyRequestsMap.get(stock);
+        SortedList<ATradeRequest> sellRequests = sellRequestsMap.get(stock);
+        int currentRound = simulation.getRound();
+
+        for (ATradeRequest buyRequest : buyRequests) {
+            if (buyRequest.expiredAndShouldBeDeleted(currentRound)) {
+                buyRequests.remove(buyRequest);
+            }
+        }
+
+        for (ATradeRequest sellRequest : sellRequests) {
+            if (sellRequest.expiredAndShouldBeDeleted(currentRound)) {
+                sellRequests.remove(sellRequest);
+            }
+        }
+    }
 
 }

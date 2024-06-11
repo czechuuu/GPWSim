@@ -14,10 +14,19 @@ public class SortedList<T> implements Iterable<T> {
         this.list = new ArrayList<>();
     }
 
+    public ArrayList<T> getList() {
+        return list;
+    }
 
+    /**
+     * Adds the specified element to this list in a sorted manner.
+     * should preserve the order of elements that compare as equal (first added is first returned by the iterator)
+     *
+     * @param element element to be added to this list
+     */
     public void add(T element) {
         int index = 0;
-        while (index < list.size() && comparator.compare(list.get(index), element) < 0) {
+        while (index < list.size() && comparator.compare(list.get(index), element) <= 0) {
             index++;
         }
         list.add(index, element);

@@ -14,7 +14,6 @@ abstract public class ATradeRequest {
     private final int priceLimit;
     private int quantity;
 
-
     // Constructor for the investor
     public ATradeRequest(AInvestor investor, Stock stock, int quantity, int priceLimit, TradeType tradeType) {
         this.investor = investor;
@@ -23,6 +22,8 @@ abstract public class ATradeRequest {
         this.tradeType = tradeType;
         this.priceLimit = priceLimit;
     }
+
+    abstract public boolean expiredAndShouldBeDeleted(int currentRound);
 
     public void reduceQuantity(int quantity) {
         if (quantity > this.quantity) {

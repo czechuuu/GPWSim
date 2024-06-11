@@ -8,6 +8,8 @@ public class IndefiniteTradeRequest extends ATradeRequest {
         super(investor, stock, quantity, priceLimit, tradeType);
     }
 
-    // Can be realised over multiple rounds
-    // Implement the trade logic here
+    @Override
+    public boolean expiredAndShouldBeDeleted(int currentRound) {
+        return false; // never expires
+    }
 }

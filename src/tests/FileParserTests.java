@@ -1,4 +1,4 @@
-package tests.parserTests;
+package tests;
 
 import org.junit.jupiter.api.Test;
 import utilities.Parser;
@@ -16,7 +16,7 @@ public class FileParserTests {
 
     @Test
     public void parseFileFromMoodleTest() throws IOException {
-        Parser parser = new Parser(getAbsolutePath("src/tests/parserTests/moodle.txt"));
+        Parser parser = new Parser(getAbsolutePath("src/tests/testFiles/moodle.txt"));
         // first line parsed
         // R R R R S S
         assertEquals(4, parser.getNumberOfRandomInvestors());

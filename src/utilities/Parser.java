@@ -13,7 +13,7 @@ public class Parser {
     private int numberOfSMAInvestors;
     private int initialCash;
 
-    public Parser(String filePath) throws IOException {
+    public Parser(String filePath) throws IOException, IllegalArgumentException {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             boolean investorTypesParsed = false;
@@ -47,7 +47,7 @@ public class Parser {
                     String[] stocks = line.split(" ");
                     for (String stock : stocks) {
                         String[] stockInfo = stock.split(":");
-                        assert stockInfo.length == 2 : "Invalid stock price format";
+                        if (stockInfo.length != 2) throw new IllegalArgumentException("Invalid stock price format");
                         stockPrices.put(stockInfo[0], Integer.parseInt(stockInfo[1]));
                     }
                     stockPricesParsed = true;
@@ -59,6 +59,7 @@ public class Parser {
                     initialCash = Integer.parseInt(portfolio[0]);
                     for (int i = 1; i < portfolio.length; i++) {
                         String[] stockInfo = portfolio[i].split(":");
+                        if (stockInfo.length != 2) throw new IllegalArgumentException("Invalid stock quantity format");
                         initialPortfolio.put(stockInfo[0], Integer.parseInt(stockInfo[1]));
                     }
                 }

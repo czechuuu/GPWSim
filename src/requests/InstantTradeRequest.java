@@ -8,5 +8,9 @@ public class InstantTradeRequest extends ATradeRequest {
         super(investor, stock, quantity, priceLimit, tradeType);
     }
 
+    @Override
+    public boolean expiredAndShouldBeDeleted(int currentRound) {
+        return true; // expires at the end of the round
+    }
 
 }
