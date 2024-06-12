@@ -71,19 +71,20 @@ public class TradeRequestSheet {
         SortedList<ATradeRequest> sellRequests = sellRequestsMap.get(stock);
 
         outer:
-        for (ATradeRequest buyRequest : buyRequests) {
-            for (ATradeRequest sellRequest : sellRequests) {
+        for (ATradeRequest buyRequest : new SortedList<>(buyRequests)) {
+            for (ATradeRequest sellRequest : new SortedList<>(sellRequests)) {
+                System.out.println("considering: " + sellRequest);
                 if (buyRequest.getPriceLimit() >= sellRequest.getPriceLimit()) {
                     boolean buyRequestFullfilled = realiseTrade(buyRequest, sellRequest, round);
                     if (buyRequestFullfilled) {
                         // If the buy request has been completely fulfilled, move on to the next buy request
-                        continue outer;
+                        continue;
                     }
                 } else {
                     // Since the sell requests are sorted in ascending order by price limit,
                     // if the price limit of the current sell request is less than the price limit of the current buy request,
                     // then there will be no more sell requests with price limits greater than the price limit of the current buy request.
-                    break outer;
+                    break;
                 }
             }
         }

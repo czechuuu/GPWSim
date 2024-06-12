@@ -3,14 +3,10 @@ package requests;
 import investors.AInvestor;
 import stocks.Stock;
 
-public class InstantTradeRequest extends ATradeRequest {
+public class InstantTradeRequest extends ValidUntilNthRoundTradeRequest {
     public InstantTradeRequest(AInvestor investor, Stock stock, int quantity, int priceLimit, TradeType tradeType) {
-        super(investor, stock, quantity, priceLimit, tradeType);
+        // this way round check will always fail and thus the request will expire at the end of the round
+        super(investor, stock, quantity, priceLimit, tradeType, -1);
     }
-
-    @Override
-    public boolean expiredAndShouldBeDeleted(int currentRound) {
-        return true; // expires at the end of the round
-    }
-
+    
 }

@@ -89,9 +89,7 @@ public class TradeRequestSheetTest {
         assertEquals(initialQty - qty, investor2.getStockQuantity(aplStock));
     }
 
-    // TODO DOESNT PASS
-    // PROLLY wrong lop nestings or idk
-    // sold only the first one?
+
     @Test
     public void testPartialTrade() {
         int initialBalance = parser.getInitialCash();
@@ -130,6 +128,16 @@ public class TradeRequestSheetTest {
         // check if the investors' stock portfolios have changed
         assertEquals(initialQty + sellQty1 + sellQty2, investor1.getStockQuantity(aplStock));
         assertEquals(initialQty - sellQty1 - sellQty2, investor2.getStockQuantity(aplStock));
+    }
+
+    @Test
+    public void instantTradeRemovalTest() {
+        ATradeRequest aplInstantBuyRequest = aplStock.createInstantBuyRequest(investor1, 5, 150);
+
+        tradeRequestSheet.addRequest(aplInstantBuyRequest);
+        tradeRequestSheet.realiseSubmittedTrades(simulation);
+
+        assertEquals(0, tradeRequestSheet.getBuyRequestsMap().get(aplStock).getList().size());
     }
 
 

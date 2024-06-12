@@ -14,6 +14,14 @@ public class SortedList<T> implements Iterable<T> {
         this.list = new ArrayList<>();
     }
 
+    public SortedList(SortedList<T> sortedList) {
+        this.comparator = sortedList.getComparator();
+        this.list = new ArrayList<>();
+        for (T element : sortedList.getList()) {
+            add(element);
+        }
+    }
+
     public ArrayList<T> getList() {
         return list;
     }

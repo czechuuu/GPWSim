@@ -3,13 +3,15 @@ package tests;
 import org.junit.jupiter.api.Test;
 import utilities.SortedList;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SortedListTest {
-
+    
     @Test
     public void testAlwaysSorted() {
         SortedList<Integer> sortedList = new SortedList<>(Integer::compareTo);
@@ -57,5 +59,30 @@ public class SortedListTest {
         for (int i = 0; i < sortedList.getList().size(); i++) {
             assertEquals(expected[i], sortedList.get(i));
         }
+    }
+
+    @Test
+    public void testDeletingWhileIterating() {
+        SortedList<Integer> sortedList = new SortedList<>(Integer::compareTo);
+        sortedList.add(5);
+        sortedList.add(3);
+        sortedList.add(4);
+        sortedList.add(1);
+        sortedList.add(2);
+
+        List<Integer> removedOrder = new ArrayList<>();
+
+        for (Integer i : new SortedList<>(sortedList)) {
+            removedOrder.add(i);
+            sortedList.remove(i);
+        }
+
+        assertEquals(0, sortedList.getList().size());
+        assertEquals(5, removedOrder.size());
+        assertEquals(1, removedOrder.get(0));
+        assertEquals(2, removedOrder.get(1));
+        assertEquals(3, removedOrder.get(2));
+        assertEquals(4, removedOrder.get(3));
+        assertEquals(5, removedOrder.get(4));
     }
 }

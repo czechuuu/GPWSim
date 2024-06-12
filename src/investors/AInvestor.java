@@ -1,5 +1,7 @@
 package investors;
 
+import requests.ATradeRequest;
+import simulation.StockExchangeSimulation;
 import stocks.Stock;
 
 import java.util.HashMap;
@@ -7,6 +9,7 @@ import java.util.Map;
 
 abstract public class AInvestor {
     private final int id;
+    // TODO consider deleting when 0
     private final Map<Stock, Integer> stocksPortfolio;
     private int balance;
 
@@ -20,6 +23,10 @@ abstract public class AInvestor {
         this.id = id;
         this.balance = balance;
         this.stocksPortfolio = new HashMap<>(stocksPortfolio); // copy the map!!
+    }
+
+    public Map<Stock, Integer> getStocksPortfolio() {
+        return stocksPortfolio;
     }
 
     public int getId() {
@@ -47,7 +54,16 @@ abstract public class AInvestor {
         balance -= amount;
     }
 
+    /**
+     * Check if the investor can buy the stock with the given quantity and price.
+     *
+     * @param stock    the stock to buy (in case we will add anti Money Laundering or antitrust checks)
+     * @param quantity the quantity of the stock to buy
+     * @param price    the price of the stock
+     * @return true if the investor can buy the stock, false otherwise
+     */
     public boolean canBuyStock(Stock stock, int quantity, int price) {
+        // check if the investor has enough balance to buy the stock
         int totalCost = quantity * price;
         return totalCost <= balance;
     }
@@ -81,5 +97,6 @@ abstract public class AInvestor {
         return stocksPortfolio.getOrDefault(stock, 0);
     }
 
+    abstract public ATradeRequest makeTradeDecision(StockExchangeSimulation simulation);
 
 }

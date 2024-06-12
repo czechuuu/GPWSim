@@ -36,14 +36,14 @@ public class InvestorManagement {
         return investors;
     }
 
-    public AInvestor createSMAInvestor(int balance, Map<Stock, Integer> stocksPortfolio) {
-        AInvestor investor = new SMAInvestor(nextID++, balance, stocksPortfolio);
+    public SMAInvestor createSMAInvestor(int balance, Map<Stock, Integer> stocksPortfolio) {
+        SMAInvestor investor = new SMAInvestor(nextID++, balance, stocksPortfolio);
         investors.add(investor);
         return investor;
     }
 
-    public AInvestor createRandomChoiceInvestor(int balance, Map<Stock, Integer> stocksPortfolio) {
-        AInvestor investor = new RandomChoiceInvestor(nextID++, balance, stocksPortfolio);
+    public RandomChoiceInvestor createRandomChoiceInvestor(int balance, Map<Stock, Integer> stocksPortfolio) {
+        RandomChoiceInvestor investor = new RandomChoiceInvestor(nextID++, balance, stocksPortfolio);
         investors.add(investor);
         return investor;
     }
