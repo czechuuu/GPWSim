@@ -1,0 +1,6 @@
+# 12 Random 12 SMA
+R R R R R R R R R R R R S S S S S S S S S S S S
+# only 1 stock type
+SGL:100
+# each one only has a single copy
+10000 SGL:1

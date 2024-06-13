@@ -1,0 +1,8 @@
+# 3 Random 3 SMA
+R R R S S S
+# many different stocks
+A:50 B:100 C:200 D:500 E:1000 F:2000 G:5000 H:10000
+# initial portfolios
+1000 A:20 B:10 C:5 D:2 E:1 F:2 G:4 H:10
+# investors start with a small amount of cash
+# but can liquidate their portfolios to get more cash

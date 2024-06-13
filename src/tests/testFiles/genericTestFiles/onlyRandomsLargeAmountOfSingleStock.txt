@@ -1,0 +1,7 @@
+# 10 randoms
+R R R R R R R R R R
+# single APL stock
+APL:250
+# starting portfolio
+# large amount in rotation
+10000 APL:100

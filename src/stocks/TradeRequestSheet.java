@@ -25,8 +25,6 @@ public class TradeRequestSheet {
     private final Map<Stock, SortedList<ATradeRequest>> sellRequestsMap;
 
     public TradeRequestSheet() {
-
-
         buyRequestsMap = new HashMap<>();
         sellRequestsMap = new HashMap<>();
     }

@@ -1,0 +1,8 @@
+# only one Random investor
+R
+# some stocks
+APL:100 TSLA:200
+# he's rich
+# but money doesn't buy happiness
+# so he's (presumably) sad
+1000000 APL:500 TSLA:900

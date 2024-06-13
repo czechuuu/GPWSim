@@ -8,5 +8,5 @@ public class InstantTradeRequest extends ValidUntilNthRoundTradeRequest {
         // this way round check will always fail and thus the request will expire at the end of the round
         super(investor, stock, quantity, priceLimit, tradeType, -1);
     }
-    
+
 }

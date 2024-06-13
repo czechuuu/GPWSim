@@ -3,6 +3,7 @@ package utilities;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +14,12 @@ public class Parser {
     private int numberOfSMAInvestors;
     private int initialCash;
 
+    public Parser(Path filePath) throws IOException {
+        this(filePath.toString());
+    }
+
     public Parser(String filePath) throws IOException, IllegalArgumentException {
+        String fileError = " in file" + filePath;
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             boolean investorTypesParsed = false;
@@ -36,7 +42,7 @@ public class Parser {
                         } else if (type.equals("S")) {
                             numberOfSMAInvestors++;
                         } else {
-                            throw new IllegalArgumentException("Invalid investor type: " + type);
+                            throw new IllegalArgumentException("Invalid investor type: " + type + fileError);
                         }
                     }
                     investorTypesParsed = true;
@@ -47,7 +53,8 @@ public class Parser {
                     String[] stocks = line.split(" ");
                     for (String stock : stocks) {
                         String[] stockInfo = stock.split(":");
-                        if (stockInfo.length != 2) throw new IllegalArgumentException("Invalid stock price format");
+                        if (stockInfo.length != 2)
+                            throw new IllegalArgumentException("Invalid stock price format" + fileError);
                         stockPrices.put(stockInfo[0], Integer.parseInt(stockInfo[1]));
                     }
                     stockPricesParsed = true;
@@ -59,7 +66,8 @@ public class Parser {
                     initialCash = Integer.parseInt(portfolio[0]);
                     for (int i = 1; i < portfolio.length; i++) {
                         String[] stockInfo = portfolio[i].split(":");
-                        if (stockInfo.length != 2) throw new IllegalArgumentException("Invalid stock quantity format");
+                        if (stockInfo.length != 2)
+                            throw new IllegalArgumentException("Invalid stock quantity format" + fileError);
                         initialPortfolio.put(stockInfo[0], Integer.parseInt(stockInfo[1]));
                     }
                 }
@@ -73,6 +81,10 @@ public class Parser {
 
     public int getNumberOfSMAInvestors() {
         return numberOfSMAInvestors;
+    }
+
+    public int getNumberOfInvestors() {
+        return numberOfRandomInvestors + numberOfSMAInvestors;
     }
 
     public Map<String, Integer> getStockPrices() {

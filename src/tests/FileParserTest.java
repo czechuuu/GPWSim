@@ -4,19 +4,14 @@ import org.junit.jupiter.api.Test;
 import utilities.Parser;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FileParserTest {
-    private static String getAbsolutePath(String filePath) {
-        return Path.of(filePath).toAbsolutePath().toString();
-    }
-
 
     @Test
     public void parseFileFromMoodleTest() throws IOException {
-        Parser parser = new Parser(getAbsolutePath("src/tests/testFiles/moodle.txt"));
+        Parser parser = new Parser(TestPaths.MOODLE_TEST_PATH);
         // first line parsed
         // R R R R S S
         assertEquals(4, parser.getNumberOfRandomInvestors());

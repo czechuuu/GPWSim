@@ -16,7 +16,7 @@ public class StockManagementTest {
 
     @BeforeEach
     public void setUp() throws IOException {
-        parser = new Parser("src/tests/testFiles/moodle.txt");
+        parser = new Parser(TestPaths.MOODLE_TEST_PATH);
     }
 
     @Test

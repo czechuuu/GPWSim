@@ -19,7 +19,7 @@ public class ValidUntilNthRoundTradeRequest extends ATradeRequest {
 
     @Override
     public boolean expiredAndShouldBeDeleted(int currentRound) {
-        assert currentRound <= lastRound : "Request wasn't deleted immediately after the last round";
-        return currentRound == lastRound;
+        // we allow it to be greater for easy InstantTradeRequest implementation
+        return currentRound >= lastRound;
     }
 }
