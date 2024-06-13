@@ -1,8 +1,9 @@
 # only one Random investor
 R
 # some stocks
-APL:100 TSLA:200
+APL:100
 # he's rich
 # but money doesn't buy happiness
 # so he's (presumably) sad
-1000000 APL:500 TSLA:900
+1000000 APL:500
+# so to make himself richer he's going to trade with himself to pump the price

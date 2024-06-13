@@ -76,6 +76,7 @@ public class RandomChoiceInvestor extends AInvestor {
 
     }
 
+    @Override
     public String toString() {
         return "Random Investor " + getId();
     }

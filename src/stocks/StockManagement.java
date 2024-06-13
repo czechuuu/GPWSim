@@ -27,6 +27,11 @@ public class StockManagement {
         createStocksFromIdentifierPriceMap(identifierPriceMap);
     }
 
+    /**
+     * Creates a new stock management with the given parser.
+     *
+     * @param parser the parser
+     */
     public StockManagement(Parser parser) {
         this(parser.getStockPrices());
     }
@@ -63,16 +68,33 @@ public class StockManagement {
         throw new NoSuchElementException("Stock with identifier " + identifier + " does not exist");
     }
 
+    /**
+     * Returns all stocks.
+     *
+     * @return collection of all stocks
+     */
     public Collection<Stock> getStocks() {
         return stockIdentifiers.values();
     }
 
+    /**
+     * Creates stocks from the given identifier-price map.
+     *
+     * @param identifierPriceMap the identifier-price map
+     */
     private void createStocksFromIdentifierPriceMap(Map<String, Integer> identifierPriceMap) {
         for (Map.Entry<String, Integer> entry : identifierPriceMap.entrySet()) {
             createStock(entry.getKey(), entry.getValue(), 0);
         }
     }
 
+    /**
+     * Updates the stock price by the given identifier.
+     *
+     * @param identifier the identifier of the stock
+     * @param price      the price of the stock
+     * @param tradeRound the trade round of the stock
+     */
     public void updateStockPriceByName(String identifier, int price, int tradeRound) {
         Stock stock = getStock(identifier);
         stock.updateLastTransactionInformation(price, tradeRound);

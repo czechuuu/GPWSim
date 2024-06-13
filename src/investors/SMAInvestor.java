@@ -17,10 +17,23 @@ public class SMAInvestor extends AInvestor {
     private static final int SMA_DIFFERENCE = 5;
     private static final int SINGAL_LENGTH = 10;
 
+    /**
+     * Creates a new SMA investor with the given name and balance and an empty portfolio.
+     *
+     * @param name    the name of the investor
+     * @param balance the balance of the investor
+     */
     public SMAInvestor(int name, int balance) {
         super(name, balance);
     }
 
+    /**
+     * Creates a new SMA investor with the given name, balance, and stocks portfolio.
+     *
+     * @param name            the name of the investor
+     * @param balance         the balance of the investor
+     * @param stocksPortfolio the stocks portfolio of the investor
+     */
     public SMAInvestor(int name, int balance, Map<Stock, Integer> stocksPortfolio) {
         super(name, balance, stocksPortfolio);
     }
@@ -37,6 +50,7 @@ public class SMAInvestor extends AInvestor {
             return null; // he doesn't have enough data to make a decision
         }
 
+
         // filer out stocks that are not in the portfolio
         // (the ones that the investor has 0 of)
         Collection<Stock> stocksInPossesion = getStocksPortfolio().entrySet().stream()
@@ -44,7 +58,7 @@ public class SMAInvestor extends AInvestor {
         for (Stock stock : stocksInPossesion) {
             if (stockExchangeSimulation.getLastTradeData().checkIfSMASellSignal(stock)) {
                 int qty = getStocksPortfolio().get(stock);
-                int price = stock.getLastPrice() + SMA_DIFFERENCE;
+                int price = stock.getLastPrice() - SMA_DIFFERENCE; // to make it easier to sell
                 int lastRoundValid = stockExchangeSimulation.getRound() + SINGAL_LENGTH;
                 return RequestManagement.createValidUntilNthRoundTradeRequest(this, stock, qty, price, SELL, lastRoundValid);
             }

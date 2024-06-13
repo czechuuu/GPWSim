@@ -14,10 +14,24 @@ public class Parser {
     private int numberOfSMAInvestors;
     private int initialCash;
 
-    public Parser(Path filePath) throws IOException {
+    /**
+     * Creates a new parser with the given file path.
+     *
+     * @param filePath the file path
+     * @throws IOException              if an I/O error occurs
+     * @throws IllegalArgumentException if the file format is invalid
+     */
+    public Parser(Path filePath) throws IOException, IllegalArgumentException {
         this(filePath.toString());
     }
 
+    /**
+     * Creates a new parser with the given String of a file path.
+     *
+     * @param filePath the file path as a String
+     * @throws IOException              if an I/O error occurs
+     * @throws IllegalArgumentException if the file format is invalid
+     */
     public Parser(String filePath) throws IOException, IllegalArgumentException {
         String fileError = " in file" + filePath;
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
@@ -73,28 +87,61 @@ public class Parser {
                 }
             }
         }
+
+        if (!stockPrices.keySet().containsAll(initialPortfolio.keySet()))
+            throw new IllegalArgumentException("Invalid stock identifier in initial portfolio" + fileError);
     }
 
+    /**
+     * Returns the number of random investors.
+     *
+     * @return the number of random investors
+     */
     public int getNumberOfRandomInvestors() {
         return numberOfRandomInvestors;
     }
 
+    /**
+     * Returns the number of SMA investors.
+     *
+     * @return the number of SMA investors
+     */
     public int getNumberOfSMAInvestors() {
         return numberOfSMAInvestors;
     }
 
+    /**
+     * Returns the total number of investors.
+     *
+     * @return the total number of investors
+     */
     public int getNumberOfInvestors() {
         return numberOfRandomInvestors + numberOfSMAInvestors;
     }
 
+    /**
+     * Returns the stock prices.
+     *
+     * @return the stock prices
+     */
     public Map<String, Integer> getStockPrices() {
         return stockPrices;
     }
 
+    /**
+     * Returns the initial portfolio.
+     *
+     * @return the initial portfolio
+     */
     public Map<String, Integer> getInitialPortfolio() {
         return initialPortfolio;
     }
 
+    /**
+     * Returns the initial cash.
+     *
+     * @return the initial cash
+     */
     public int getInitialCash() {
         return initialCash;
     }

@@ -26,11 +26,19 @@ public class TradeRequestSheet {
     private final Map<Stock, SortedList<ATradeRequest>> buyRequestsMap;
     private final Map<Stock, SortedList<ATradeRequest>> sellRequestsMap;
 
+    /**
+     * Creates a new trade request sheet.
+     */
     public TradeRequestSheet() {
         buyRequestsMap = new HashMap<>();
         sellRequestsMap = new HashMap<>();
     }
 
+    /**
+     * Adds a trade request to the trade request sheet.
+     *
+     * @param request the trade request to add
+     */
     public void addRequest(ATradeRequest request) {
         if (request.isBuyRequest()) {
             addBuyRequest(request);
@@ -39,6 +47,11 @@ public class TradeRequestSheet {
         }
     }
 
+    /**
+     * Adds a buy request to the trade request sheet.
+     *
+     * @param request the buy request to add
+     */
     private void addBuyRequest(ATradeRequest request) {
         // make sure there are lists for the stock
         buyRequestsMap.putIfAbsent(request.getStock(), new SortedList<>(buyComparator));
@@ -47,6 +60,11 @@ public class TradeRequestSheet {
         buyRequestsMap.get(request.getStock()).add(request);
     }
 
+    /**
+     * Adds a sell request to the trade request sheet.
+     *
+     * @param request the sell request to add
+     */
     private void addSellRequest(ATradeRequest request) {
         // make sure there are lists for the stock
         buyRequestsMap.putIfAbsent(request.getStock(), new SortedList<>(buyComparator));
@@ -55,18 +73,34 @@ public class TradeRequestSheet {
         sellRequestsMap.get(request.getStock()).add(request);
     }
 
+    /**
+     * Realises submitted trades.
+     *
+     * @param simulation the simulation
+     */
     public void realiseSubmittedTrades(StockExchangeSimulation simulation) {
-        checkForTrades(simulation.getRound());
+        checkForTrades(simulation);
         removeExpiredRequests(simulation);
     }
 
-    private void checkForTrades(int round) {
+    /**
+     * Checks for trades.
+     *
+     * @param simulation the simulation
+     */
+    private void checkForTrades(StockExchangeSimulation simulation) {
         for (Stock stock : buyRequestsMap.keySet()) {
-            checkForTradesForStock(stock, round);
+            checkForTradesForStock(stock, simulation);
         }
     }
 
-    private void checkForTradesForStock(Stock stock, int round) {
+    /**
+     * Checks for trades for a specific stock.
+     *
+     * @param stock      the stock
+     * @param simulation the simulation
+     */
+    private void checkForTradesForStock(Stock stock, StockExchangeSimulation simulation) {
         SortedList<ATradeRequest> buyRequests = buyRequestsMap.get(stock);
         SortedList<ATradeRequest> sellRequests = sellRequestsMap.get(stock);
 
@@ -75,7 +109,7 @@ public class TradeRequestSheet {
             for (ATradeRequest sellRequest : new SortedList<>(sellRequests)) {
                 EventLogging.log("Checking trade between " + buyRequest + " and " + sellRequest);
                 if (buyRequest.getPriceLimit() >= sellRequest.getPriceLimit()) {
-                    boolean buyRequestFullfilled = realiseTrade(buyRequest, sellRequest, round);
+                    boolean buyRequestFullfilled = realiseTrade(buyRequest, sellRequest, simulation);
                     if (buyRequestFullfilled) {
                         // If the buy request has been completely fulfilled, move on to the next buy request
                         continue;
@@ -96,9 +130,11 @@ public class TradeRequestSheet {
      *
      * @param buyRequest  the buy request
      * @param sellRequest the sell request
+     * @param simulation  the simulation
      * @return true if the buy request has been completely fulfilled or cancelled, false otherwise
      */
-    private boolean realiseTrade(ATradeRequest buyRequest, ATradeRequest sellRequest, int round) {
+    private boolean realiseTrade(ATradeRequest buyRequest, ATradeRequest sellRequest, StockExchangeSimulation simulation) {
+        int round = simulation.getRound();
         // Implement the trade logic here
         // Assume that this will delete from the list of requests
         int quantity = Math.min(buyRequest.getQuantity(), sellRequest.getQuantity());
@@ -214,10 +250,20 @@ public class TradeRequestSheet {
         }
     }
 
+    /**
+     * Get the map of buy requests.
+     *
+     * @return the map of buy requests
+     */
     public Map<Stock, SortedList<ATradeRequest>> getBuyRequestsMap() {
         return buyRequestsMap;
     }
 
+    /**
+     * Get the map of sell requests.
+     *
+     * @return the map of sell requests
+     */
     public Map<Stock, SortedList<ATradeRequest>> getSellRequestsMap() {
         return sellRequestsMap;
     }

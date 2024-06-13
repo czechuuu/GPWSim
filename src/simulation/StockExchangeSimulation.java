@@ -17,6 +17,11 @@ public class StockExchangeSimulation {
     private final LastTradeData lastTradeData;
     private int round;
 
+    /**
+     * Creates a new stock exchange simulation with the given number of rounds.
+     *
+     * @param totalRounds the total number of rounds
+     */
     public StockExchangeSimulation(int totalRounds) {
         this.totalRounds = totalRounds;
         this.round = 0;
@@ -25,6 +30,12 @@ public class StockExchangeSimulation {
         this.investorManagement = new InvestorManagement(stockManagement);
     }
 
+    /**
+     * Creates a new stock exchange simulation with the given number of rounds and parser.
+     *
+     * @param totalRounds the total number of rounds
+     * @param parser      the parser
+     */
     public StockExchangeSimulation(int totalRounds, Parser parser) {
         this.totalRounds = totalRounds;
         this.round = 0;
@@ -33,10 +44,18 @@ public class StockExchangeSimulation {
         this.investorManagement = new InvestorManagement(stockManagement, parser);
     }
 
+    /**
+     * Runs the stock exchange simulation.
+     */
     public void run() {
         TradeRequestSheet tradeRequestSheet = new TradeRequestSheet();
 
         while (round < totalRounds) {
+            // We update the last trade data
+            for (Stock stock : stockManagement.getStocks()) {
+                // we treat the last trade data of a round as the price of the stock at the end of the round
+                lastTradeData.addTradeData(stock, stock.getLastPrice());
+            }
             // We randomly shuffle the investors to avoid any bias
             Collection<AInvestor> investorsInRandomOrder = investorManagement.getInvestorsInRandomOrder();
             for (AInvestor investor : investorsInRandomOrder) {
@@ -49,33 +68,54 @@ public class StockExchangeSimulation {
             }
             // If everyone has made their decisions, we realise the trades
             tradeRequestSheet.realiseSubmittedTrades(this);
-            // We update the last trade data
-            for (Stock stock : stockManagement.getStocks()) {
-                // we treat the last trade data of a round as the price of the stock at the end of the round
-                lastTradeData.addTradeData(stock, stock.getLastPrice());
-            }
+
             // and we update the SMA data
             lastTradeData.updateSMA();
             round++;
         }
     }
 
+    /**
+     * Get the investor management.
+     *
+     * @return the investor management
+     */
     public InvestorManagement getInvestorManagement() {
         return investorManagement;
     }
 
+    /**
+     * Get the total number of rounds.
+     *
+     * @return the total number of rounds
+     */
     public int getTotalRounds() {
         return totalRounds;
     }
 
+    /**
+     * Get the stock management.
+     *
+     * @return the stock management
+     */
     public StockManagement getStockManagement() {
         return stockManagement;
     }
 
+    /**
+     * Get the current round.
+     *
+     * @return the current round
+     */
     public int getRound() {
         return round;
     }
 
+    /**
+     * Get the last trade data.
+     *
+     * @return the last trade data
+     */
     public LastTradeData getLastTradeData() {
         return lastTradeData;
     }

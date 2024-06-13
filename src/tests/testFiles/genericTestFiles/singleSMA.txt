@@ -1,0 +1,8 @@
+# only one SMA investor
+S
+# some stocks
+APL:100
+# he'll never get the signal to trade
+# so his net worth will remain the same
+# 1000000 + 500 * 100 = 1000000 + 50000 = 1050000
+1000000 APL:500

@@ -17,6 +17,11 @@ public class RandomChoiceMachine {
         return list.get((int) (Math.random() * list.size()));
     }
 
+    /**
+     * Returns a random boolean.
+     *
+     * @return a random boolean
+     */
     public boolean getRandomBoolean() {
         return Math.random() < 0.5;
     }

@@ -1,0 +1,7 @@
+# two randoms one SMA
+R R S
+A:100
+# we want them to have a lot of money and trade a lot
+# to give the SMA an opportunity to react to signals
+100000 A:200
+# the SMA should probably have better net worth than the randoms

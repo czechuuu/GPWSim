@@ -32,6 +32,14 @@ public class SimpleInvariantTest {
                 });
     }
 
+    /**
+     * Test the simple invariant of the simulation.
+     * That is:
+     * - The total money in the system is constant
+     * - The total number of stocks in the system is constant
+     *
+     * @param parser the parser
+     */
     @ParameterizedTest
     @MethodSource("provideParsersForTests")
     public void testSimpleInvariant(Parser parser) {
@@ -43,6 +51,7 @@ public class SimpleInvariantTest {
         checkConstantMoney(simulation, parser);
         // Check if the total number of stocks in the system is constant
         checkConstantStocks(simulation, parser);
+
     }
 
     private void checkConstantMoney(StockExchangeSimulation simulation, Parser parser) {

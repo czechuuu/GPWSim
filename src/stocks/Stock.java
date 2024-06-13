@@ -19,20 +19,40 @@ public class Stock {
         this.lastTradeRound = 0; // or -1?
     }
 
-
+    /**
+     * Updates the last transaction information of the stock.
+     *
+     * @param price      the price of the stock
+     * @param tradeRound the trade round of the stock
+     */
     public void updateLastTransactionInformation(int price, int tradeRound) {
         this.lastPrice = price;
         this.lastTradeRound = tradeRound;
     }
 
+    /**
+     * Get the identifier of the stock.
+     *
+     * @return the identifier of the stock
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     * Get the last price of the stock.
+     *
+     * @return the last price of the stock
+     */
     public int getLastPrice() {
         return lastPrice;
     }
 
+    /**
+     * Get the last trade round of the stock.
+     *
+     * @return the last trade round of the stock
+     */
     public int getLastTradeRound() {
         return lastTradeRound;
     }
@@ -50,6 +70,4 @@ public class Stock {
         else
             return lastPrice + maxChange;
     }
-
-
 }

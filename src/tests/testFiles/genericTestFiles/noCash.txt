@@ -1,0 +1,7 @@
+# 3 randoms 3 SMA
+R R R S S S
+# some stocks
+APL:50 GGL:100
+# but no cash
+0 APL:10 GGL:2
+# no trades should be made
