@@ -1,7 +1,9 @@
 package stocks;
 
 import requests.ATradeRequest;
+import requests.RequestManagement;
 import simulation.StockExchangeSimulation;
+import utilities.EventLogging;
 import utilities.SortedList;
 
 import java.util.Comparator;
@@ -71,7 +73,7 @@ public class TradeRequestSheet {
         outer:
         for (ATradeRequest buyRequest : new SortedList<>(buyRequests)) {
             for (ATradeRequest sellRequest : new SortedList<>(sellRequests)) {
-                System.out.println("considering: " + sellRequest);
+                EventLogging.log("Checking trade between " + buyRequest + " and " + sellRequest);
                 if (buyRequest.getPriceLimit() >= sellRequest.getPriceLimit()) {
                     boolean buyRequestFullfilled = realiseTrade(buyRequest, sellRequest, round);
                     if (buyRequestFullfilled) {
@@ -100,20 +102,23 @@ public class TradeRequestSheet {
         // Implement the trade logic here
         // Assume that this will delete from the list of requests
         int quantity = Math.min(buyRequest.getQuantity(), sellRequest.getQuantity());
+        int olderPrice = RequestManagement.chooseOlderPrice(buyRequest, sellRequest);
 
-        if (buyRequest.getInvestor().canBuyStock(buyRequest.getStock(), quantity, buyRequest.getPriceLimit())) {
-            if (sellRequest.getInvestor().canSellStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit())) {
-                buyRequest.getInvestor().buyStock(buyRequest.getStock(), quantity, sellRequest.getPriceLimit());
-                sellRequest.getInvestor().sellStock(sellRequest.getStock(), quantity, sellRequest.getPriceLimit());
+        if (buyRequest.getInvestor().canBuyStock(buyRequest.getStock(), quantity, olderPrice)) {
+            if (sellRequest.getInvestor().canSellStock(sellRequest.getStock(), quantity, olderPrice)) {
+                buyRequest.getInvestor().buyStock(buyRequest.getStock(), quantity, olderPrice);
+                sellRequest.getInvestor().sellStock(sellRequest.getStock(), quantity, olderPrice);
                 reduceQuantityOrRemove(buyRequest, quantity);
                 reduceQuantityOrRemove(sellRequest, quantity);
-                buyRequest.getStock().updateLastTransactionInformation(sellRequest.getPriceLimit(), buyRequest.getStock().getLastTradeRound());
+                buyRequest.getStock().updateLastTransactionInformation(olderPrice, buyRequest.getStock().getLastTradeRound());
+                EventLogging.log("Trade realised");
                 return !buyRequestsMap.get(buyRequest.getStock()).getList().contains(buyRequest);
             }
         }
 
         // we don't consider realizing trade possibly even more partially
         // if one of the investors can afford only part of the trade
+        EventLogging.log("Trade cancelled");
         removeRequestIfCancelledDueToInsufficientFunds(sellRequest);
         return removeRequestIfCancelledDueToInsufficientFunds(buyRequest);
     }

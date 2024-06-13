@@ -1,7 +1,7 @@
 package investors;
 
 import requests.ATradeRequest;
-import requests.ValidUntilNthRoundTradeRequest;
+import requests.RequestManagement;
 import simulation.StockExchangeSimulation;
 import stocks.Stock;
 
@@ -46,7 +46,7 @@ public class SMAInvestor extends AInvestor {
                 int qty = getStocksPortfolio().get(stock);
                 int price = stock.getLastPrice() + SMA_DIFFERENCE;
                 int lastRoundValid = stockExchangeSimulation.getRound() + SINGAL_LENGTH;
-                return new ValidUntilNthRoundTradeRequest(this, stock, qty, price, SELL, lastRoundValid);
+                return RequestManagement.createValidUntilNthRoundTradeRequest(this, stock, qty, price, SELL, lastRoundValid);
             }
         }
 
@@ -59,11 +59,15 @@ public class SMAInvestor extends AInvestor {
                 int qty = balance / stock.getLastPrice();
                 int price = stock.getLastPrice(); // he wants to buy really fast, so he doesn't haggle
                 int lastRoundValid = stockExchangeSimulation.getRound() + SINGAL_LENGTH;
-                return new ValidUntilNthRoundTradeRequest(this, stock, qty, price, BUY, lastRoundValid);
+                return RequestManagement.createValidUntilNthRoundTradeRequest(this, stock, qty, price, BUY, lastRoundValid);
             }
         }
 
         return null; // no signal received
     }
 
+    @Override
+    public String toString() {
+        return "SMAInvestor " + getId();
+    }
 }

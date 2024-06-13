@@ -4,9 +4,9 @@ import investors.AInvestor;
 import stocks.Stock;
 
 public class InstantTradeRequest extends ValidUntilNthRoundTradeRequest {
-    public InstantTradeRequest(AInvestor investor, Stock stock, int quantity, int priceLimit, TradeType tradeType) {
+    public InstantTradeRequest(AInvestor investor, Stock stock, int quantity, int priceLimit, TradeType tradeType, int id) {
         // this way round check will always fail and thus the request will expire at the end of the round
-        super(investor, stock, quantity, priceLimit, tradeType, -1);
+        super(investor, stock, quantity, priceLimit, tradeType, -1, id);
     }
 
 }

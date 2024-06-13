@@ -5,6 +5,7 @@ import investors.InvestorManagement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import requests.ATradeRequest;
+import requests.RequestManagement;
 import simulation.StockExchangeSimulation;
 import stocks.Stock;
 import stocks.StockManagement;
@@ -49,9 +50,10 @@ public class TradeRequestSheetTest {
         int qty = 5;
         int buyUpperLimit = 150;
         int sellLowerLimit = 140;
-        int moneyDifference = qty * sellLowerLimit;
+        int moneyDifference = qty * buyUpperLimit;
         // Add a buy request
-        ATradeRequest aplBuyRequest = aplStock.createIndefiniteBuyRequest(investor1, qty, buyUpperLimit);
+        ATradeRequest aplBuyRequest =
+                RequestManagement.createIndefiniteTradeRequest(investor1, aplStock, qty, buyUpperLimit, ATradeRequest.TradeType.BUY);
         tradeRequestSheet.addRequest(aplBuyRequest);
 
         // check if the request was added correctly to the buy list
@@ -62,7 +64,7 @@ public class TradeRequestSheetTest {
         assertEquals(0, tradeRequestSheet.getSellRequestsMap().get(aplStock).getList().size());
 
         // Add a sell request
-        ATradeRequest aplSellRequest = aplStock.createIndefiniteSellRequest(investor2, qty, sellLowerLimit);
+        ATradeRequest aplSellRequest = RequestManagement.createIndefiniteTradeRequest(investor2, aplStock, qty, sellLowerLimit, ATradeRequest.TradeType.SELL);
         tradeRequestSheet.addRequest(aplSellRequest);
 
         // check if the request was added correctly to the sell list
@@ -80,7 +82,7 @@ public class TradeRequestSheetTest {
         // check if the sell list is empty
         assertEquals(0, tradeRequestSheet.getSellRequestsMap().get(aplStock).getList().size());
         //check if the stock price has changed
-        assertEquals(140, aplStock.getLastPrice());
+        assertEquals(150, aplStock.getLastPrice());
         // check if the investors' balances have changed
         assertEquals(initialBalance - moneyDifference, investor1.getBalance());
         assertEquals(initialBalance + moneyDifference, investor2.getBalance());
@@ -90,6 +92,10 @@ public class TradeRequestSheetTest {
     }
 
 
+    /**
+     * Tests whether a trade is partially executed when the buy request quantity is greater than the sell request quantity.
+     * Also tests if the trade price is the price of the older trade request; the one that was submitted first.
+     */
     @Test
     public void testPartialTrade() {
         int initialBalance = parser.getInitialCash();
@@ -101,17 +107,25 @@ public class TradeRequestSheetTest {
         int sellLowerLimit1 = 135;
         int sellLowerLimit2 = 140;
 
-        int moneyDifference = sellQty1 * sellLowerLimit1 + sellQty2 * sellLowerLimit2;
+        int moneyDifference = sellQty1 * buyUpperLimit + sellQty2 * sellLowerLimit2;
+
+        // ORDER MATTERS
+
+        // Add a sell request 2
+        ATradeRequest aplSellRequest2 =
+                RequestManagement.createIndefiniteTradeRequest(investor2, aplStock, sellQty2, sellLowerLimit2, ATradeRequest.TradeType.SELL);
+        tradeRequestSheet.addRequest(aplSellRequest2);
+
         // Add a buy request
-        ATradeRequest aplBuyRequest = aplStock.createIndefiniteBuyRequest(investor1, buyQty, buyUpperLimit);
+        ATradeRequest aplBuyRequest =
+                RequestManagement.createIndefiniteTradeRequest(investor1, aplStock, buyQty, buyUpperLimit, ATradeRequest.TradeType.BUY);
         tradeRequestSheet.addRequest(aplBuyRequest);
 
         // Add a sell request 1
-        ATradeRequest aplSellRequest1 = aplStock.createIndefiniteSellRequest(investor2, sellQty1, sellLowerLimit1);
+        ATradeRequest aplSellRequest1 =
+                RequestManagement.createIndefiniteTradeRequest(investor2, aplStock, sellQty1, sellLowerLimit1, ATradeRequest.TradeType.SELL);
         tradeRequestSheet.addRequest(aplSellRequest1);
-        // Add a sell request 2
-        ATradeRequest aplSellRequest2 = aplStock.createIndefiniteSellRequest(investor2, sellQty2, sellLowerLimit2);
-        tradeRequestSheet.addRequest(aplSellRequest2);
+
 
         // commence the trade
         tradeRequestSheet.realiseSubmittedTrades(simulation);
@@ -121,7 +135,7 @@ public class TradeRequestSheetTest {
         // check if the sell list is empty
         assertEquals(0, tradeRequestSheet.getSellRequestsMap().get(aplStock).getList().size());
         //check if the stock price has changed
-        assertEquals(140, aplStock.getLastPrice());
+        assertEquals(sellLowerLimit2, aplStock.getLastPrice()); // the last sell request price
         // check if the investors' balances have changed
         assertEquals(initialBalance - moneyDifference, investor1.getBalance());
         assertEquals(initialBalance + moneyDifference, investor2.getBalance());
@@ -132,7 +146,7 @@ public class TradeRequestSheetTest {
 
     @Test
     public void instantTradeRemovalTest() {
-        ATradeRequest aplInstantBuyRequest = aplStock.createInstantBuyRequest(investor1, 5, 150);
+        ATradeRequest aplInstantBuyRequest = RequestManagement.createInstantTradeRequest(investor1, aplStock, 5, 150, ATradeRequest.TradeType.BUY);
 
         tradeRequestSheet.addRequest(aplInstantBuyRequest);
         tradeRequestSheet.realiseSubmittedTrades(simulation);

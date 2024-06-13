@@ -4,8 +4,8 @@ import investors.AInvestor;
 import stocks.Stock;
 
 public class AllOrNothingTradeRequest extends ATradeRequest {
-    public AllOrNothingTradeRequest(AInvestor investor, Stock stock, int quantity, int priceLimit, TradeType tradeType) {
-        super(investor, stock, quantity, priceLimit, tradeType);
+    public AllOrNothingTradeRequest(AInvestor investor, Stock stock, int quantity, int priceLimit, TradeType tradeType, int id) {
+        super(investor, stock, quantity, priceLimit, tradeType, id);
     }
 
     @Override

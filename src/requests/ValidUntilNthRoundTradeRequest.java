@@ -8,8 +8,8 @@ public class ValidUntilNthRoundTradeRequest extends ATradeRequest {
 
 
     // Constructor for the investor
-    public ValidUntilNthRoundTradeRequest(AInvestor investor, Stock stock, int quantity, int priceLimit, TradeType tradeType, int lastRound) {
-        super(investor, stock, quantity, priceLimit, tradeType);
+    public ValidUntilNthRoundTradeRequest(AInvestor investor, Stock stock, int quantity, int priceLimit, TradeType tradeType, int lastRound, int id) {
+        super(investor, stock, quantity, priceLimit, tradeType, id);
         this.lastRound = lastRound;
     }
 
