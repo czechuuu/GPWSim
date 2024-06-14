@@ -12,16 +12,16 @@ import java.util.List;
 public class App {
     public static void main(String[] args) {
         runSimulationFromAFile(args);
-//        EventLogging.setLoggingEnabled(false);
-//        try {
-//            runExampleSimulations();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        // runExampleSimulations();
     }
 
+    /**
+     * Runs a simulation from a file.
+     *
+     * @param args the command line arguments
+     */
     private static void runSimulationFromAFile(String[] args) {
-        assert args.length == 2 : "<executable> <file path> <simulation length>";
+        assert args.length == 2 : "java <name> <file path> <simulation length>";
         String filePath = args[0];
         int simulationLength = Integer.parseInt(args[1]);
         // Create a new Parser instance
@@ -46,13 +46,13 @@ public class App {
 
         // Print the final state after the simulation
         printFinalState(simulation);
-        // LOOKING AT THE RESULTS
-        // TODO 2: random exceptions? division by zero and withdrawing negative amounts?
-        // TODO test single SMA
-        // TODO some tests for the test files
-        // maybe integer overflows?
     }
 
+    /**
+     * Prints the final state of the simulation in a human-readable format.
+     *
+     * @param simulation the simulation
+     */
     private static void printFinalState(StockExchangeSimulation simulation) {
         // Stock prices
         System.out.println("Stock prices: ");
@@ -79,18 +79,26 @@ public class App {
 
     }
 
-    private static void runExampleSimulations() throws IOException {
+    /**
+     * Runs example simulations from the testFiles directory.
+     */
+    private static void runExampleSimulations() {
         // simulations can't be too long or we can cause integer overflows
-        final int ROUNDS = 1000;
-        Path testFilesPath = Path.of("src", "tests", "testFiles");
-        List<Path> paths = Files.walk(testFilesPath).filter(Files::isRegularFile).toList();
-        for (Path path : paths) {
-            Parser parser = new Parser(path.toString());
-            StockExchangeSimulation simulation = new StockExchangeSimulation(ROUNDS, parser);
-            simulation.run();
-            System.out.println(EventLogging.Color.red("Results for " + path.getFileName()) + ": ");
-            printFinalState(simulation);
+        final int ROUNDS = 10000;
+        EventLogging.setLoggingEnabled(false); // to be able to see the results
+        try {
+            Path testFilesPath = Path.of("src", "tests", "testFiles");
+            List<Path> paths = Files.walk(testFilesPath).filter(Files::isRegularFile).toList();
+            for (Path path : paths) {
+                Parser parser = new Parser(path.toString());
+                StockExchangeSimulation simulation = new StockExchangeSimulation(ROUNDS, parser);
+                simulation.run();
+                System.out.println(EventLogging.Color.red("Results for " + path.getFileName()) + ": ");
+                printFinalState(simulation);
+            }
+            ;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
     }
 }

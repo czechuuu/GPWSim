@@ -13,7 +13,6 @@ import static requests.ATradeRequest.TradeType.SELL;
 
 
 public class SMAInvestor extends AInvestor {
-    // The difference between the 5-day and 10-day Simple Moving Average (SMA) of the stock
     private static final int SMA_DIFFERENCE = 5;
     private static final int SINGAL_LENGTH = 10;
 
@@ -58,7 +57,7 @@ public class SMAInvestor extends AInvestor {
         for (Stock stock : stocksInPossesion) {
             if (stockExchangeSimulation.getLastTradeData().checkIfSMASellSignal(stock)) {
                 int qty = getStocksPortfolio().get(stock);
-                int price = stock.getLastPrice() - SMA_DIFFERENCE; // to make it easier to sell
+                int price = stock.priceChangedByUpTo(-SMA_DIFFERENCE); // to make it easier to sell
                 int lastRoundValid = stockExchangeSimulation.getRound() + SINGAL_LENGTH;
                 return RequestManagement.createValidUntilNthRoundTradeRequest(this, stock, qty, price, SELL, lastRoundValid);
             }

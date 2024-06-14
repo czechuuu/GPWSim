@@ -1,4 +1,4 @@
-package tests;
+package tests.unitTests;
 
 import investors.RandomChoiceInvestor;
 import org.junit.jupiter.api.AfterAll;

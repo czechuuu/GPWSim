@@ -3,7 +3,7 @@ package tests.simulationTests;
 import org.junit.jupiter.api.RepeatedTest;
 import simulation.StockExchangeSimulation;
 import stocks.Stock;
-import tests.TestPaths;
+import tests.unitTests.TestPaths;
 import utilities.Parser;
 
 import java.io.IOException;

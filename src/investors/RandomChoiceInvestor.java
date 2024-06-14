@@ -9,6 +9,9 @@ import utilities.RandomChoiceMachine;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * For performance reasons, we don't want to use indefinite trade requests too much.
+ */
 public class RandomChoiceInvestor extends AInvestor {
     private final static int MAX_TRADE_VALIDITY = 10;
     private final RandomChoiceMachine randomChoiceMachine;

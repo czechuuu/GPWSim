@@ -18,6 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SimpleInvariantTest {
     private static final int ROUNDS = 100;
 
+    /**
+     * Provide parsers for the tests.
+     *
+     * @return a stream of parsers
+     * @throws IOException if an I/O error occurs
+     */
     static Stream<Parser> provideParsersForTests() throws IOException {
         Path testFilesPath = Path.of("src", "tests", "testFiles");
         return Files.walk(testFilesPath)
@@ -54,6 +60,12 @@ public class SimpleInvariantTest {
 
     }
 
+    /**
+     * Check if the total money in the system is constant.
+     *
+     * @param simulation the simulation
+     * @param parser     the parser
+     */
     private void checkConstantMoney(StockExchangeSimulation simulation, Parser parser) {
         // Sum the balances across all investors
         int totalMoneyAfterSimulation = simulation.getInvestorManagement().getInvestors().stream()
@@ -64,6 +76,12 @@ public class SimpleInvariantTest {
         assertEquals(totalMoneyBeforeSimulation, totalMoneyAfterSimulation);
     }
 
+    /**
+     * Check if the total number of stocks in the system is constant.
+     *
+     * @param simulation the simulation
+     * @param parser     the parser
+     */
     private void checkConstantStocks(StockExchangeSimulation simulation, Parser parser) {
         Map<Stock, Integer> initialPortfolio = simulation.getInvestorManagement()
                 .convertStocksPortfolio(parser.getInitialPortfolio());

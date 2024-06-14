@@ -53,7 +53,6 @@ public class LastTradeData {
         if (!lastTradeDataMap.containsKey(stock)) {
             return 0;
         }
-        // TODO check if streams preserve order
         List<Integer> reversedList = new LinkedList<>(lastTradeDataMap.get(stock));
         Collections.reverse(reversedList);
         return reversedList.stream().limit(n).mapToInt(Integer::intValue).average().orElse(0);

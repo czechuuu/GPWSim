@@ -1,4 +1,4 @@
-package tests;
+package tests.unitTests;
 
 import org.junit.jupiter.api.Test;
 import utilities.SortedList;
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SortedListTest {
-    
+
     @Test
     public void testAlwaysSorted() {
         SortedList<Integer> sortedList = new SortedList<>(Integer::compareTo);

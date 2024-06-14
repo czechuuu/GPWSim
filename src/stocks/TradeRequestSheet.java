@@ -8,6 +8,7 @@ import utilities.SortedList;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TradeRequestSheet {
@@ -109,6 +110,18 @@ public class TradeRequestSheet {
             for (ATradeRequest sellRequest : new SortedList<>(sellRequests)) {
                 EventLogging.log("Checking trade between " + buyRequest + " and " + sellRequest);
                 if (buyRequest.getPriceLimit() >= sellRequest.getPriceLimit()) {
+                    // we check if the trade type logic allows this to be conducted
+                    List<ATradeRequest> sellRequestSubList = null;
+                    List<ATradeRequest> buyRequestSubList = null;
+                    try {
+                        sellRequestSubList = sellRequests.getList().subList(sellRequests.getList().indexOf(sellRequest), sellRequests.getList().size());
+                        buyRequestSubList = buyRequests.getList().subList(buyRequests.getList().indexOf(buyRequest), buyRequests.getList().size());
+                    } catch (IndexOutOfBoundsException e) {
+                        continue; // index was out ouf bounds because the request was removed and not found in the list
+                    }
+                    if (!buyRequest.considerTrade(sellRequestSubList) || !sellRequest.considerTrade(buyRequestSubList)) {
+                        continue;
+                    }
                     boolean buyRequestFullfilled = realiseTrade(buyRequest, sellRequest, simulation);
                     if (buyRequestFullfilled) {
                         // If the buy request has been completely fulfilled, move on to the next buy request

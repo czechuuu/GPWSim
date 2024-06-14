@@ -3,6 +3,10 @@ package requests;
 import investors.AInvestor;
 import stocks.Stock;
 
+/**
+ * Represents a trade request that expires after the given round.
+ * For performance reasons that's the trade request type used the most in the simulation.
+ */
 public class ValidUntilNthRoundTradeRequest extends ATradeRequest {
     private final int lastRound;
 

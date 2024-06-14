@@ -88,8 +88,34 @@ public class Parser {
             }
         }
 
+        validateInputs(fileError);
+    }
+
+    /**
+     * Validates the data read from the file.
+     *
+     * @param fileError the file error
+     * @throws IllegalArgumentException if the inputs are invalid
+     */
+    private void validateInputs(String fileError) throws IllegalArgumentException {
+        // checking if every stock in initial portfolio is in stock prices
         if (!stockPrices.keySet().containsAll(initialPortfolio.keySet()))
             throw new IllegalArgumentException("Invalid stock identifier in initial portfolio" + fileError);
+        // checking if all stock prices are positive
+        if (!stockPrices.values().stream().allMatch(price -> price > 0))
+            throw new IllegalArgumentException("Invalid stock identifier in stock prices" + fileError);
+        // checking if all stock quantities are non negative
+        if (!initialPortfolio.values().stream().allMatch(quantity -> quantity >= 0))
+            throw new IllegalArgumentException("Invalid stock quantity in initial portfolio" + fileError);
+        // checking if the number of investors is positive
+        if (numberOfRandomInvestors < 0 || numberOfSMAInvestors < 0)
+            throw new IllegalArgumentException("Invalid number of investors" + fileError);
+        // checking if the initial cash is positive
+        if (initialCash < 0)
+            throw new IllegalArgumentException("Invalid initial cash" + fileError);
+        // checking if all identifiers have correct format
+        if (!stockPrices.keySet().stream().allMatch(s -> s.matches("^[A-Z]{1,5}$")))
+            throw new IllegalArgumentException("Invalid stock identifier" + fileError);
     }
 
     /**

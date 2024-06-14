@@ -4,6 +4,8 @@ import investors.AInvestor;
 import stocks.Stock;
 import utilities.EventLogging;
 
+import java.util.List;
+
 abstract public class ATradeRequest {
     private final AInvestor investor;
     private final Stock stock;
@@ -65,18 +67,13 @@ abstract public class ATradeRequest {
     }
 
     /**
-     * Check if the trade request can be considered for a trade with the given other trade request.
+     * Check if the trade request can be considered for a trade with another trade request.
      *
-     * @param other the other trade request
-     * @return true if the trade request can be considered for a trade with the other trade request, false otherwise
+     * @param possibleTrades possible trades the trade request can be considered for
+     * @return true if the trade request can be realised, false otherwise
      */
-    public boolean considerTrade(ATradeRequest other) {
-        if (this.isBuyRequest() && other.isSellRequest() && this.getPriceLimit() >= other.getPriceLimit()) {
-            return true;
-        } else if (this.isSellRequest() && other.isBuyRequest() && this.getPriceLimit() <= other.getPriceLimit()) {
-            return true;
-        }
-        return false;
+    public boolean considerTrade(List<ATradeRequest> possibleTrades) {
+        return true;
     }
 
     /**
@@ -141,7 +138,8 @@ abstract public class ATradeRequest {
      */
     @Override
     public String toString() {
-        return "Trade request for " + EventLogging.Color.blue(stock.getIdentifier()) + " by "
+        String typeString = isBuyRequest() ? "Buy" : "Sell";
+        return typeString + " request for " + EventLogging.Color.blue(stock.getIdentifier()) + " by "
                 + investor + " for " + EventLogging.Color.yellow(String.valueOf(quantity))
                 + " stocks at " + EventLogging.Color.green(String.valueOf(priceLimit));
     }
